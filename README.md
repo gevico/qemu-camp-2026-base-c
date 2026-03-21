@@ -5,6 +5,7 @@
 - 基础阶段题库保留为 `01-20`
 - 专业阶段题库顺延为 `21-40`
 - 共 `40` 道题，每题 `5` 分，满分 `200` 分
+- 仓库已切换为 `GitHub Actions` 自动评测，并支持把成绩回传到 `OpenCamp`
 
 上游题库来源：
 
@@ -61,6 +62,28 @@
 
 ## 快速开始
 
+### GitHub 自动评分
+
+当你把代码推送到 `main` 分支时，GitHub Actions 会自动：
+
+1. 编译 `c-checker`
+2. 执行 `./c-checker check-all`
+3. 生成 `test_results_summary.json`
+4. 在配置好 OpenCamp secrets 后，把分数回传到 OpenCamp 榜单
+
+工作流文件在 `.github/workflows/opencamp-autograding.yml`。
+
+### OpenCamp secrets 配置
+
+如果你希望 GitHub Actions 的成绩显示到 OpenCamp 页面，需要在 GitHub 仓库里配置这些 secrets：
+
+- `OPENCAMP_COURSE_ID_C`
+- `OPENCAMP_TOKEN_C`
+- `OPENCAMP_COURSE_ID_QEMU`
+- `OPENCAMP_TOKEN_QEMU`
+
+如果只需要回传到其中一个榜单，只配置对应那一组 secrets 即可。
+
 ### 1. 编译检查器
 
 ```bash
@@ -105,6 +128,7 @@ make c-checker
 
 ```text
 qemu_camp_basic_c/
+├── .github/workflows/ # GitHub Actions 自动评测与 OpenCamp 回传
 ├── exercises/         # 40 道练习题源码
 ├── tests/             # 40 个测试文件
 ├── checker/           # 测试框架
@@ -121,3 +145,4 @@ qemu_camp_basic_c/
 - 测试文件都在 `tests/test_<exercise_name>.c`
 - 专业阶段题目为了合并成一套连续题库，编号已从 `21` 开始重排
 - `20_mybash` 仍然保留原来的多模块目录结构
+- 原有的 CNB 流水线配置已经移除，当前只保留 GitHub Actions 方案
