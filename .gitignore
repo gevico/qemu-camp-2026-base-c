@@ -31,7 +31,12 @@ coverage/
 *.a
 *.lib
 c-checker
-exercises/14_calculator/14_calculator
+exercises/*/*
+!exercises/*/*.c
+!exercises/*/*.h
+!exercises/*/*.txt
+!exercises/*/*.md
+!exercises/*/Makefile
 tests/test_*
 !tests/test_*.c
 

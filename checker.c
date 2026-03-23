@@ -164,9 +164,6 @@ static void check_all_exercises(checker_t *checker) {
         if (result == 1) {
             checker->total_passed++;
             checker->exercises[i].completed = 1;
-        } else if (result == -1) {
-            checker->total_failed++;
-            checker->exercises[i].completed = -1;
         } else {
             checker->exercises[i].completed = 0;
         }
@@ -181,11 +178,11 @@ static void check_all_exercises(checker_t *checker) {
 
     generate_overall_json_report(checker);
 
-    if (checker->total_failed == 0) {
+    if (checker->total_passed == checker->count) {
         printf("\n" COLOR_GREEN "🎉 恭喜！所有练习题都通过了！" COLOR_RESET "\n");
     } else {
-        printf("\n" COLOR_YELLOW "还有 %d 道练习题需要完成" COLOR_RESET "\n", checker->count - checker->total_passed)
-;    }
+        printf("\n" COLOR_YELLOW "还有 %d 道练习题需要完成" COLOR_RESET "\n", checker->count - checker->total_passed);
+    }
 }
 
 static void show_hint(const char *exercise_name) {
@@ -254,9 +251,6 @@ static void generate_overall_json_report(checker_t *checker) {
         if (exercise->completed == 1) {
             fprintf(file, "      \"status\": \"PASSED\",\n");
             fprintf(file, "      \"score\": %d\n", SCORE_PER_EXERCISE);
-        } else if (exercise->completed == -1) {
-            fprintf(file, "      \"status\": \"FAILED\",\n");
-            fprintf(file, "      \"score\": 0\n");
         } else {
             fprintf(file, "      \"status\": \"NOT_COMPLETED\",\n");
             fprintf(file, "      \"score\": 0\n");
