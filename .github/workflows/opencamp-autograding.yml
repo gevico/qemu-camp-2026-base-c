@@ -22,10 +22,6 @@ on:
 permissions:
   contents: read
 
-env:
-  OPENCAMP_API_URL: https://api.opencamp.cn/web/api/courseRank/createByThirdToken
-  OPENCAMP_COURSE_ID_QEMU: "1901"
-
 concurrency:
   group: opencamp-autograding-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -147,60 +143,50 @@ jobs:
       - name: Check token availability
         id: qemu-token
         env:
-          OPENCAMP_TOKEN: ${{ secrets.OPENCAMP_TOKEN_QEMU }}
+          OPENCAMP_TOKEN: ${{ secrets.LEARNING_QEMU_2025_AUTUMN_TOKEN }}
+          OPENCAMP_API_URL: ${{ secrets.LEARNING_QEMU_2025_COURSE_POST_API }}
+          OPENCAMP_COURSE_ID: ${{ secrets.LEARNING_QEMU_2025_AUTUMN_COURSE_ID }}
         run: |
-          if [ -z "$OPENCAMP_TOKEN" ]; then
+          if [ -z "$OPENCAMP_TOKEN" ] || [ -z "$OPENCAMP_API_URL" ] || [ -z "$OPENCAMP_COURSE_ID" ]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Mark skipped when token is missing
+      - name: Mark skipped when reporting secrets are missing
         if: steps.qemu-token.outputs.enabled != 'true'
-        run: echo "OpenCamp QEMU reporting skipped because OPENCAMP_TOKEN_QEMU is not configured." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "OpenCamp QEMU reporting skipped because LEARNING_QEMU_2025_COURSE_POST_API, LEARNING_QEMU_2025_AUTUMN_TOKEN, or LEARNING_QEMU_2025_AUTUMN_COURSE_ID is not configured." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Send score to OpenCamp QEMU
         id: report-qemu
         if: steps.qemu-token.outputs.enabled == 'true'
         env:
-          OPENCAMP_TOKEN: ${{ secrets.OPENCAMP_TOKEN_QEMU }}
-          OPENCAMP_COURSE_ID: ${{ env.OPENCAMP_COURSE_ID_QEMU }}
+          OPENCAMP_API_URL: ${{ secrets.LEARNING_QEMU_2025_COURSE_POST_API }}
+          OPENCAMP_TOKEN: ${{ secrets.LEARNING_QEMU_2025_AUTUMN_TOKEN }}
+          OPENCAMP_COURSE_ID: ${{ secrets.LEARNING_QEMU_2025_AUTUMN_COURSE_ID }}
           GITHUB_USER: ${{ github.actor }}
-          REPOSITORY: ${{ github.repository }}
-          SHA: ${{ github.sha }}
-          TOTAL_EXERCISES: ${{ needs.autograde.outputs.total_exercises }}
-          PASSED_EXERCISES: ${{ needs.autograde.outputs.passed_exercises }}
           TOTAL_SCORE: ${{ needs.autograde.outputs.total_score }}
           MAX_SCORE: ${{ needs.autograde.outputs.max_score }}
+          SUMMARY: build/summary.json
         run: |
-          payload=$(jq -n \
+          mkdir -p "$(dirname "$SUMMARY")"
+          jq -n \
             --arg channel "github" \
-            --arg courseId "$OPENCAMP_COURSE_ID" \
+            --argjson courseId "$OPENCAMP_COURSE_ID" \
+            --arg ext "{}" \
             --arg name "$GITHUB_USER" \
-            --arg score "$TOTAL_SCORE" \
-            --arg totalScore "$MAX_SCORE" \
-            --arg passedExercises "$PASSED_EXERCISES" \
-            --arg totalExercises "$TOTAL_EXERCISES" \
-            --arg repository "$REPOSITORY" \
-            --arg sha "$SHA" \
-            '{
-              channel: $channel,
-              courseId: ($courseId | tonumber),
-              name: $name,
-              score: ($score | tonumber),
-              totalScore: ($totalScore | tonumber),
-              ext: {
-                passed_exercises: ($passedExercises | tonumber),
-                total_exercises: ($totalExercises | tonumber),
-                repository: $repository,
-                sha: $sha
-              }
-            }')
+            --argjson score "$TOTAL_SCORE" \
+            --argjson totalScore "$MAX_SCORE" \
+            '{channel: $channel, courseId: $courseId, ext: $ext, name: $name, score: $score, totalScore: $totalScore}' > "$SUMMARY"
+
+          cat "$SUMMARY"
 
           curl --fail-with-body -X POST "$OPENCAMP_API_URL" \
+            -H "accept: application/json;charset=utf-8" \
             -H "Content-Type: application/json" \
             -H "token: $OPENCAMP_TOKEN" \
-            -d "$payload"
+            -d @"$SUMMARY" \
+            -v
 
       - name: Finalize report status
         id: finalize

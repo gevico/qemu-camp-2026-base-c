@@ -84,11 +84,9 @@
 
 如果你希望 GitHub Actions 的成绩显示到 OpenCamp 页面，需要在 GitHub 仓库里配置这些 secrets：
 
-- `OPENCAMP_TOKEN_QEMU`
-
-当前 workflow 已内置课程 ID：
-
-- QEMU 课程：`1901`
+- `LEARNING_QEMU_2025_COURSE_POST_API`
+- `LEARNING_QEMU_2025_AUTUMN_TOKEN`
+- `LEARNING_QEMU_2025_AUTUMN_COURSE_ID`
 
 当前只会回传到 OpenCamp QEMU 榜单。
 
@@ -105,7 +103,10 @@
 
 - fork 仓库不会自动继承原仓库的 repository secrets
 - 如果要让 GitHub Classroom 批量可用，最好在 GitHub 组织里配置 organization secrets
-- 至少需要配置：`OPENCAMP_TOKEN_QEMU`
+- 至少需要配置：
+  - `LEARNING_QEMU_2025_COURSE_POST_API`
+  - `LEARNING_QEMU_2025_AUTUMN_TOKEN`
+  - `LEARNING_QEMU_2025_AUTUMN_COURSE_ID`
 
 ### 1. 编译检查器
 
