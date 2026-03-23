@@ -43,7 +43,7 @@ jobs:
       max_score: ${{ steps.summary.outputs.max_score }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install jq
         run: |
@@ -76,7 +76,7 @@ jobs:
           jq '.test_summary' test_results_summary.json
 
       - name: Upload grading summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-summary
           path: test_results_summary.json
