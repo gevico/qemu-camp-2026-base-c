@@ -12,6 +12,42 @@
 - 基础阶段: [c-training-basic](https://cnb.cool/opencamp/learning-c/c-training-basic)
 - 专业阶段: [c-training-advanced](https://cnb.cool/opencamp/learning-c/c-training-advanced)
 
+## 开始练习
+
+1. **准备 Linux 环境**。推荐使用原生 Linux、WSL2 Ubuntu 22.04，或虚拟机中的 Linux 环境完成练习。
+2. **安装基础开发工具**。请先确保本机已经安装 `git`、`gcc`、`make` 等常用开发工具，能够正常执行 C 程序编译。在 Ubuntu / Debian / WSL2 Ubuntu 环境下，可以执行：
+
+   ```bash
+   sudo apt update
+   sudo apt install -y git gcc make
+   ```
+
+   安装完成后，可以执行下面的命令确认工具已经安装成功：
+
+   ```bash
+   git --version
+   gcc --version
+   make --version
+   ```
+3. **加入 GitHub Classroom**。点击实验邀请链接，加入 GitHub Classroom，获取你自己的专属仓库地址。
+4. **clone 实验仓库到本地**。使用自己的专属仓库链接执行 `git clone`，再使用 `cd` 进入仓库根目录。
+5. **查看可用命令**。在仓库根目录执行 `make help`，先熟悉题库支持的检查命令。
+6. **编译检查器并查看题目列表**。执行 `make c-checker` 编译题库检查器，再执行 `make list` 查看全部 40 道练习题。
+7. **开始做题**。建议按照编号顺序完成题目。可以先执行 `make check 01` 检查单题，也可以执行 `make hint 01` 查看提示。
+8. **边改边验证**。完成某道题后，重新执行 `make check <题号>` 验证结果；做完一批题后，再执行 `make check-all` 进行整体检查。
+9. **提交练习结果**。当完成部分或全部练习后，在仓库根目录执行 `git add .`、`git commit -m "update"`、`git push`，触发 GitHub Actions 自动评测。
+
+### 常用起步命令
+
+```bash
+make help
+make c-checker
+make list
+make check 01
+make hint 01
+make check-all
+```
+
 ## 题目列表
 
 ### 01-20 基础阶段
