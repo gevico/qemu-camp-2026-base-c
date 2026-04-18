@@ -70,8 +70,8 @@
   * 编译并运行程序，捕获输出
   */
  int compile_and_run(const char* source_file, const char* executable, char* output, size_t output_size, int is_make) {
-     char compile_cmd[512];
-     char run_cmd[256];
+     char compile_cmd[4096];
+     char run_cmd[2048];
      FILE* fp;
      
      // 清空输出缓冲区
@@ -122,7 +122,7 @@
      // 运行程序
      switch (is_make) {
         case 2: {
-            snprintf(run_cmd, sizeof(run_cmd), "bash ./test_%s.sh", executable);
+            snprintf(run_cmd, sizeof(run_cmd), "cd ../exercises/%s && bash ./test_%s.sh", executable,executable);
             fp = popen(run_cmd, "r");
             if (fp == NULL) {
                 strncpy(output, "无法执行程序", output_size - 1);
